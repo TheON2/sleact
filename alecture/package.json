@@ -21,7 +21,7 @@
     "autosize": "^4.0.2",
     "axios": "^0.21.1",
     "cross-env": "^7.0.3",
-    "css-loader": "^5.0.2",
+    "css-loader": "^5.2.7",
     "dayjs": "^1.10.4",
     "gravatar": "^1.8.1",
     "react": "^17.0.1",
@@ -42,9 +42,9 @@
     "webpack-cli": "^4.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/preset-env": "^7.12.16",
-    "@babel/preset-react": "^7.12.13",
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.12.16",
     "@types/autosize": "^3.0.7",
     "@types/loadable__component": "^5.13.3",
@@ -58,6 +58,7 @@
     "@types/webpack-bundle-analyzer": "^3.9.1",
     "@types/webpack-dev-server": "^3.11.1",
     "babel-loader": "^8.2.2",
+    "bable-loader": "^0.0.1-security",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-react-app": "^6.0.0",
@@ -68,7 +69,7 @@
     "eslint-plugin-react": "^7.22.0",
     "fork-ts-checker-webpack-plugin": "^6.1.0",
     "prettier": "^2.2.1",
-    "webpack": "^5.22.0",
+    "webpack": "^5.74.0",
     "webpack-dev-server": "^3.11.2"
   },
   "description": ""

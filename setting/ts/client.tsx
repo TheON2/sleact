@@ -7,13 +7,4 @@ import axios from 'axios';
 
 import App from './layouts/App';
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL =
-  process.env.NODE_ENV === 'production' ? 'https://sleact.nodebird.com' : 'http://localhost:3090';
-
-render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
-  document.querySelector('#app'),
-);
+render (<App />,document.querySelector('#app'));
