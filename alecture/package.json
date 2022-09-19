@@ -1,7 +1,6 @@
 {
   "name": "alecture",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --env development",
@@ -71,5 +70,6 @@
     "prettier": "^2.2.1",
     "webpack": "^5.22.0",
     "webpack-dev-server": "^3.11.2"
-  }
+  },
+  "description": ""
 }
