@@ -1,3 +1,11 @@
+제로초 조현영 님의 슬랙 클론코딩 을 공부하며 만들어진 기본 소스를 토대로
+
+재해석하여 완성시키는 슬랙
+
+
+ㅡㅡㅡㅡㅡ제로초님 readme 파트
+
+
 강의교안 기여(Pull Request) 환영합니다.
 
 백엔드 강좌 강의교안은 [여기](https://github.com/ZeroCho/sleact/blob/master/nest-typeorm/README.md) 에 있습니다. 
