@@ -30,25 +30,24 @@ const SingUp = () => {
     const onSubmit = useCallback(
         (e) => {
             e.preventDefault();
-            if (!mismatchError && nickname) {
+            if (!mismatchError && nickname){
                 console.log('서버로 회원가입하기');
                 setSignUpError('');
                 setSignUpSuccess(false);
-                axios
-                    .post('/api/users', {
-                        email,
-                        nickname,
-                        password,
-                    })
-                    .then((response) => {
+                axios.post('http://localhost:3090/api/users',{
+                    email,
+                    nickname,
+                    password,
+                })
+                    .then((response)=>{
                         console.log(response);
                         setSignUpSuccess(true);
                     })
-                    .catch((error) => {
+                    .catch((error)=>{
                         console.log(error.response);
                         setSignUpError(error.response.data);
                     })
-                    .finally(() => {});
+                    .finally(()=>{});
             }
         },
         [email, nickname, password, passwordCheck, mismatchError],
