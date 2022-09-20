@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-<<<<<<< HEAD
-    <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
-=======
->>>>>>> 1cd60163c4bb3b73044f366c1bf56c57f3955c88
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/a-nest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/ch0" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/nest-typeorm/a-nest" vcs="Git" />
   </component>
 </project>
