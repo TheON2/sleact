@@ -1,13 +1,13 @@
 import useInput from '@hooks/useInput';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
-//import fetcher from '@utils/fetcher';
+import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import useSWR from 'swr';
 
 const LogIn = () => {
-    //const { data, error, revalidate, mutate } = useSWR('/api/users', fetcher);
+    const { data, error, revalidate, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
 
     const [logInError, setLogInError] = useState(false);
     const [email, onChangeEmail] = useInput('');
@@ -18,14 +18,18 @@ const LogIn = () => {
             setLogInError(false);
             axios
                 .post(
-                    '/api/users/login',
+                    'http://localhost:3095/api/users/login',
                     { email, password },
                     {
                         withCredentials: true,
                     },
                 )
                 .then((response) => {
-                    //revalidate();
+                    //revalidate();   // swr의 주기적인 요청으로 인한 백서버 트래픽을 방지하기 위함
+                    mutate(response.data,false);
+                    //mutate로 then처리를 하면 서버에 요청을 보내기전 클라이언트가 우선적으로 작업을 처리하고
+                    //이후 서버에 신호를 보낸다 . 이를 OPTIMISTIC UI 라고 한다.
+                    //shouldRevalidate 옵션을 false로 돌리면 클라이언트만 작동하고 서버에 신호는 안보낸다.
                 })
                 .catch((error) => {
                     setLogInError(error.response?.data?.statusCode === 401);
@@ -34,13 +38,13 @@ const LogIn = () => {
         [email, password],
     );
 
-    // if (data === undefined) {
-    //     return <div>로딩중...</div>;
-    // }
-    //
-    // if (data) {
-    //     return <Redirect to="/workspace/sleact/channel/일반" />;
-    // }
+    if (data === undefined) {
+        return <div>로딩중...</div>;
+    }
+
+    if (data) {
+        return <Redirect to="/workspace/channel" />;
+    }
 
     // console.log(error, userData);
     // if (!error && userData) {
