@@ -3,6 +3,17 @@ import useSWR from "swr";
 import fetcher from "@utils/fetcher";
 import axios from 'axios';
 import {Redirect} from "react-router";
+import {
+    Channels, Chats,
+    Header, MenuScroll,
+    ProfileImg,
+    RightMenu,
+    WorkspaceName,
+    Workspaces,
+    WorkspaceWrapper
+} from "@layouts/Workspace/styles";
+import gravatar from 'gravatar';
+
 
 const Workspace: FC = ({children}) => {
     const {data, error, revalidate, mutate} = useSWR('http://localhost:3095/api/users', fetcher,{
@@ -14,7 +25,7 @@ const Workspace: FC = ({children}) => {
             withCredentials: true,
         })
             .then((response) => {
-                mutate(response.data,false);
+                mutate(false,false);
             })
     }, []);
 
@@ -24,10 +35,25 @@ const Workspace: FC = ({children}) => {
 
     return (
         <div>
+            <Header>
+                <RightMenu>
+                    <span>
+                        <ProfileImg src={gravatar.url(data.email,{s:'28px',d:'retro'})} alt={data.nickname}></ProfileImg>
+                    </span>
+                </RightMenu>
+            </Header>
             <button onClick={onLogout}>로그아웃</button>
+            <WorkspaceWrapper>
+                <Workspaces>test</Workspaces>
+                <Channels>
+                    <WorkspaceName>Sleact</WorkspaceName>
+                    <MenuScroll>menu scroll</MenuScroll>
+                </Channels>
+                <Chats>Chats</Chats>
+            </WorkspaceWrapper>
             {children}
         </div>
-    )
-}
+    );
+};
 
 export default Workspace;

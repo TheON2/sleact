@@ -4,7 +4,7 @@ import Workspace from "@layouts/Workspace";
 const Channel = () => {
     return (
     <Workspace>
-        <div>로그인 하신것을 축하드립니다</div>
+        <div>로그인 하신것을! 축하드립니다</div>
     </Workspace>
     );
 }
