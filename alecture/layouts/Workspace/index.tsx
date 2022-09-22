@@ -17,16 +17,24 @@ import gravatar from 'gravatar';
 import loadable from "@loadable/component";
 import Menu from "@components/Menu";
 import {Link} from 'react-router-dom';
+import {IUser} from "@typings/db";
+import Modal from "../../../front/components/Modal";
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 
 const Workspace: FC = ({children}) => {
-    const {data: userData, error, revalidate, mutate} = useSWR('http://localhost:3095/api/users', fetcher, {
+    const {
+        data: userData,
+        error,
+        revalidate,
+        mutate
+    } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher, {
         dedupingInterval: 2000, // 2초
     });
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
 
     const onLogout = useCallback(() => {
         axios.post('http://localhost:3095/api/users/logout', null, {
@@ -41,8 +49,8 @@ const Workspace: FC = ({children}) => {
         setShowUserMenu((prev) => !prev);
     }, []);
 
-    const onClickCreate = useCallback(() => {
-
+    const onClickCreateWorkspace = useCallback(() => {
+        setShowCreateWorkspaceModal(true);
     }, []);
 
     if (!userData) {
@@ -74,14 +82,14 @@ const Workspace: FC = ({children}) => {
             <button onClick={onLogout}>로그아웃</button>
             <WorkspaceWrapper>
                 <Workspaces>
-                    {userData.Workspaces.map((ws) => {
+                    {userData?.Workspaces.map((ws) => {
                         return (
                             <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
                                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
                             </Link>
                         );
                     })}
-                    <AddButton onClick={onClickCreate}>+</AddButton>
+                    <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
                 </Workspaces>
                 <Channels>
                     <WorkspaceName>Sleact</WorkspaceName>
@@ -94,6 +102,16 @@ const Workspace: FC = ({children}) => {
                     </Switch>
                 </Chats>
             </WorkspaceWrapper>
+            <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
+                <Label id="workspace-label">
+                    <span>워크스페이스 이름</span>
+                    <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace}/>
+                </Label>
+                <Label id="workspace-url-label">
+                    <span>워크스페이스 이름</span>
+                    <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace}/>
+                </Label>
+            </Modal>
             {children}
         </div>
     );
