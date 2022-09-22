@@ -14,6 +14,8 @@ const Menu: FC<Props> = ({children, style, show, onCloseModal,closeButton}) => {
         e.stopPropagation(); // 상위 태그로의 이벤트전달을 방지
     },[]);
 
+    if (!show) return null;
+
     return (
         <CreateMenu onClick={onCloseModal}>
             <div style={style} onClick={stopPropagation}>
