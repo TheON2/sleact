@@ -9,7 +9,7 @@ import {Redirect} from "react-router";
 
 const SingUp = () => {
 
-    const {data, error, revalidate, mutate} = useSWR('http://localhost:3095/api/users', fetcher);
+    const {data, error, revalidate, mutate} = useSWR('/api/users', fetcher);
 
     const [email, onChangeEmail] = useInput('');
     const [nickname, onChangeNickname] = useInput('');
@@ -39,7 +39,7 @@ const SingUp = () => {
                 console.log('서버로 회원가입하기');
                 setSignUpError('');
                 setSignUpSuccess(false);
-                axios.post('http://localhost:3090/api/users',{
+                axios.post('/api/users',{
                     email,
                     nickname,
                     password,
