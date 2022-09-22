@@ -44,6 +44,10 @@ const Workspace: VFC = () => {
         dedupingInterval: 2000, // 2초
     },);
     const {data:channelData} = useSWR<IChannel[]>(userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null ,fetcher);
+    const { data: memberData } = useSWR<IUser[]>(
+        userData ? `http://localhost:3095/api/workspaces/${workspace}/members` : null,
+        fetcher,
+    );
 
     const onLogout = useCallback(() => {
         axios.post('http://localhost:3095/api/users/logout', null, {
