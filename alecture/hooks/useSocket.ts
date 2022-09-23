@@ -22,7 +22,7 @@ const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () =
   if (!sockets[workspace]) {
     sockets[workspace] = io.connect(`${backUrl}/ws-${workspace}`, {
       transports: ['websocket'],
-    });
+    }); // 무분별한 소켓생성 시도를 막기 위해 소켓이 존재하지 않을때만 소켓생성을 시도한다.
   }
 
   return [sockets[workspace], disconnect];
