@@ -39,7 +39,7 @@ const SingUp = () => {
                 console.log('서버로 회원가입하기');
                 setSignUpError('');
                 setSignUpSuccess(false);
-                axios.post('/api/users',{
+                axios.post('http://localhost:3090/api/users',{
                     email,
                     nickname,
                     password,
