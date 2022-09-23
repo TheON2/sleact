@@ -29,7 +29,7 @@ const ChatBox : VFC<Props> = ({chat,onSubmitForm,onChangeChat,placeholder}) => {
                 onSubmitForm(e);
             }
         }
-    },[]);
+    },[onSubmitForm]);
 
     return(
         <ChatArea>
