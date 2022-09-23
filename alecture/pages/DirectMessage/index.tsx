@@ -1,5 +1,5 @@
 import Workspace from "@layouts/Workspace";
-import React from "react";
+import React, {useCallback} from "react";
 
 import gravatar from "gravatar";
 import {Container, Header } from "./styles";
@@ -9,6 +9,7 @@ import fetcher from "@utils/fetcher";
 import {useParams} from "react-router";
 import ChatBox from "@components/ChatBox";
 import ChatList from "@components/ChatList";
+import useInput from "@hooks/useInput";
 
 const DirectMessage = () => {
     const { workspace , id } = useParams<{workspace: string ,id: string}>();
@@ -16,6 +17,11 @@ const DirectMessage = () => {
         dedupingInterval: 2000, // 2초
     },);
     const { data : myData } = useSWR('/api/users',fetcher);
+    const [chat, onChangeChat] = useInput('');
+
+    const onSubmitForm = useCallback((e)=>{
+        e.preventDefault();
+    },[]);
 
     if( !userData || !myData){
         return null;
@@ -28,7 +34,7 @@ const DirectMessage = () => {
                 <span>{userData.nickname}</span>
             </Header>
             <ChatList/>
-            <ChatBox chat=""/>
+            <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm}/>
         </Container>
     )
 }
