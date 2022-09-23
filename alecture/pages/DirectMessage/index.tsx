@@ -7,10 +7,12 @@ import useSWR from "swr";
 import {IUser} from "@typings/db";
 import fetcher from "@utils/fetcher";
 import {useParams} from "react-router";
+import ChatBox from "@components/ChatBox";
+import ChatList from "@components/ChatList";
 
 const DirectMessage = () => {
     const { workspace , id } = useParams<{workspace: string ,id: string}>();
-    const { data: userData, error, revalidate, mutate} = useSWR(`/api/workspaces/${workspace}/members/${id}`, fetcher, {
+    const { data: userData, error, revalidate, mutate} = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher, {
         dedupingInterval: 2000, // 2초
     },);
     const { data : myData } = useSWR('/api/users',fetcher);
@@ -26,7 +28,7 @@ const DirectMessage = () => {
                 <span>{userData.nickname}</span>
             </Header>
             <ChatList/>
-            <ChatBox/>
+            <ChatBox chat=""/>
         </Container>
     )
 }
