@@ -26,10 +26,12 @@ const LogIn = () => {
                 )
                 .then((response) => {
                     //revalidate();   // swr의 주기적인 요청으로 인한 백서버 트래픽을 방지하기 위함
-                    mutate(response.data,false);
+                    revalidate();
                     //mutate로 then처리를 하면 서버에 요청을 보내기전 클라이언트가 우선적으로 작업을 처리하고
                     //이후 서버에 신호를 보낸다 . 이를 OPTIMISTIC UI 라고 한다.
                     //shouldRevalidate 옵션을 false로 돌리면 클라이언트만 작동하고 서버에 신호는 안보낸다.
+                    //해당 부분을 mutate로 했다가 userData가 정확하게 들어오지 못하면서 렌더링에 딜레이가
+                    //생기는 일이 발생했었다. 유의할것
                 })
                 .catch((error) => {
                     setLogInError(error.response?.data?.statusCode === 401);

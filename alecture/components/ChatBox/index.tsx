@@ -1,7 +1,12 @@
 import React, {useCallback, VFC, useRef, useEffect} from "react";
-import {MentionsTextarea, Form, ChatArea, Toolbox, SendButton} from "@components/ChatBox/styles";
-import {Mention} from "react-mentions";
+import {MentionsTextarea, Form, ChatArea, Toolbox, SendButton, EachMention} from "@components/ChatBox/styles";
+import {Mention, SuggestionDataItem} from "react-mentions";
 import autosize from "autosize";
+import {useParams} from "react-router";
+import useSWR from "swr";
+import fetcher from "@utils/fetcher";
+import {IUserWithOnline} from "@typings/db";
+import gravatar from "gravatar";
 
 interface Props {
     chat: string;
@@ -10,28 +15,51 @@ interface Props {
     placeholder?: string;
 }
 
-const ChatBox : VFC<Props> = ({chat,onSubmitForm,onChangeChat,placeholder}) => {
+const ChatBox: VFC<Props> = ({chat, onSubmitForm, onChangeChat, placeholder}) => {
+
+    const {workspace, id} = useParams<{ workspace: string, id: string }>();
+    const {
+        data: userData,
+        error,
+        mutate
+    } = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher, {dedupingInterval: 2000,},);
+    const {data: memberData} = useSWR<IUserWithOnline[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher,);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    const renderUserSuggestion = useCallback(
+        (
+             suggestion: SuggestionDataItem,
+             search: string,
+             highlightedDisplay: React.ReactNode,
+             index: number,
+             focus: boolean,
+        ): React.ReactNode => {
+            if(!memberData) return;
+            return(
+                <EachMention focus={focus}>
+                    <img src={gravatar.url(memberData[index].email, { s: '20px' , d: 'retro'})} alt={memberData[index].nickname}/>
+                    <span>{highlightedDisplay}</span>
+                </EachMention>
+            )
+        }, [memberData]);
+
     useEffect(() => {
-        if (textareaRef.current){
+        if (textareaRef.current) {
             autosize(textareaRef.current);
         }
     }, []);
 
-
-    const onKeydownChat=useCallback((e)=>{
-        if(e.key === 'Enter'){
-            if(!e.shiftKey)
-            {
+    const onKeydownChat = useCallback((e) => {
+        if (e.key === 'Enter') {
+            if (!e.shiftKey) {
                 e.preventDefault();
                 onSubmitForm(e);
             }
         }
-    },[onSubmitForm]);
+    }, [onSubmitForm]);
 
-    return(
+    return (
         <ChatArea>
             <Form onSubmit={onSubmitForm}>
                 <MentionsTextarea
@@ -46,7 +74,7 @@ const ChatBox : VFC<Props> = ({chat,onSubmitForm,onChangeChat,placeholder}) => {
                     <Mention
                         appendSpaceOnAdd
                         trigger="@"
-                        data={data?.map((v) => ({ id: v.id, display: v.nickname })) || []}
+                        data={memberData?.map((v) => ({id: v.id, display: v.nickname})) || []}
                         renderSuggestion={renderUserSuggestion}
                     />
                 </MentionsTextarea>
@@ -62,7 +90,7 @@ const ChatBox : VFC<Props> = ({chat,onSubmitForm,onChangeChat,placeholder}) => {
                         type="submit"
                         disabled={!chat?.trim()}
                     >
-                        <i className="c-icon c-icon--paperplane-filled" aria-hidden="true" />
+                        <i className="c-icon c-icon--paperplane-filled" aria-hidden="true"/>
                     </SendButton>
                 </Toolbox>
             </Form>
