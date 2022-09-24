@@ -1,4 +1,4 @@
-import React, {VFC} from "react";
+import React, {memo,useMemo, VFC} from "react";
 import {IDM} from "@typings/db";
 import {ChatWrapper} from "./styles";
 import gravatar from "gravatar";
@@ -19,7 +19,7 @@ const Chat: VFC<Props> = ({data}) => {
     // @[제로초1] (7)
     // \d 숫자 +는 1개이상 ?는 0개 or 1개 *는 0개이상
     // g는 모두찾기
-    const result = regexifyString({
+    const result = useMemo(()=>regexifyString({
         pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
         decorator(match, index) {
             const arr: string[] | null = match.match(/@\[(.+?)]\((\d+?)\)/)!;
@@ -33,7 +33,7 @@ const Chat: VFC<Props> = ({data}) => {
             return <br key={index} />;
         },
         input: data.content,
-    });
+    }),[data.content]);
 
     return (
         <ChatWrapper>
@@ -51,4 +51,4 @@ const Chat: VFC<Props> = ({data}) => {
     );
 };
 
-export default Chat;
+export default memo(Chat);
