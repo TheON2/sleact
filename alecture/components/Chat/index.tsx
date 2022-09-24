@@ -1,6 +1,6 @@
 import React, {VFC} from "react";
 import {IDM} from "@typings/db";
-import { ChatWrapper } from "./styles";
+import {ChatWrapper} from "./styles";
 import gravatar from "gravatar";
 
 interface Props {
@@ -9,9 +9,10 @@ interface Props {
 
 const Chat: VFC<Props> = ({data}) => {
     const user = data.Sender;
-    return<ChatWrapper>
-            <div>
-                <img src={gravatar.url(user.email, { s: '36px' , d: 'retro'})} alt={user.nickname} />
+    return (
+        <ChatWrapper>
+            <div className="chat-img">
+                <img src={gravatar.url(user.email, {s: '36px', d: 'retro'})} alt={user.nickname}/>
             </div>
             <div className="chat-text">
                 <div className="chat-user">
@@ -19,8 +20,9 @@ const Chat: VFC<Props> = ({data}) => {
                     <span>{data.createdAt}</span>
                 </div>
             </div>
+            <p>{data.content}</p>
         </ChatWrapper>
-    ;
+    );
 };
 
 export default Chat;
