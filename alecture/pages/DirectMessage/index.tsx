@@ -1,9 +1,9 @@
 import Workspace from "@layouts/Workspace";
-import React, {useCallback} from "react";
+import React, {useCallback, useRef} from "react";
 
 import gravatar from "gravatar";
-import {Container, Header } from "./styles";
-import useSWR from "swr";
+import {Container, Header} from "./styles";
+import useSWR, {useSWRInfinite} from "swr";
 import {IDM, IUser} from "@typings/db";
 import fetcher from "@utils/fetcher";
 import {useParams} from "react-router";
@@ -12,42 +12,50 @@ import ChatList from "@components/ChatList";
 import useInput from "@hooks/useInput";
 import axios from "axios";
 import makeSection from "@utils/makeSection";
+import Scrollbars from "react-custom-scrollbars";
 
 const DirectMessage = () => {
-    const { workspace , id } = useParams<{workspace: string ,id: string}>();
-    const { data: userData, error, mutate} = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher, {dedupingInterval: 2000, // 2초
+    const {workspace, id} = useParams<{ workspace: string, id: string }>();
+    const {data: userData, error, mutate} = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher, {
+        dedupingInterval: 2000, // 2초
     },);
-    const { data : myData } = useSWR('/api/users',fetcher);
-    const { data : chatData,mutate: mutateChat,revalidate } = useSWR<IDM[]>(
-        `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,fetcher);
+    const {data: myData} = useSWR('/api/users', fetcher);
+    const {data: chatData, mutate: mutateChat, revalidate, setSize} = useSWRInfinite<IDM[]>(
+        (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${index + 1}`, fetcher);
 
-    const [chat, onChangeChat , setChat] = useInput('');
+    const [chat, onChangeChat, setChat] = useInput('');
 
-    const onSubmitForm = useCallback((e)=>{
+    const isEmpty = chatData?.[0]?.length === 0;
+    // isEmpty = chatData를 수신 성공하고 , 첫배열에 데이터가 존재할때 , 그 길이가 0인가?
+    // 인피니트 스크롤로 더 읽어올 chatData가 남은지에 대한 true , false 값을 저장하는 변수
+    const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < 20) || false;
+    const scrollbarRef = useRef<Scrollbars>(null);
+    const onSubmitForm = useCallback((e) => {
         e.preventDefault();
         if (chat?.trim()) {
-            axios.post(`/api/workspaces/${workspace}/dms/${id}/chats`,{
-                content:chat,
-            }).then(()=>{
+            axios.post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
+                content: chat,
+            }).then(() => {
                 revalidate();
                 setChat('');
             }).catch(console.error);
         }
-    },[chat]);
+    }, [chat]);
 
-    if( !userData || !myData){
+    if (!userData || !myData) {
         return null;
     }
 
-    const chatSections = makeSection(chatData ? [...chatData].reverse() : [])
+    const chatSections = makeSection(chatData ? chatData.flat().reverse() : []);
 
-    return(
+    return (
         <Container>
             <Header>
-                <img src={gravatar.url(userData.email, { s: '24px',})} alt={userData.nickname}/>
+                <img src={gravatar.url(userData.email, {s: '24px',})} alt={userData.nickname}/>
                 <span>{userData.nickname}</span>
             </Header>
-            <ChatList chatSections={chatSections}/>
+            <ChatList chatSections={chatSections} ref={scrollbarRef} setSize={setSize} isEmpty={isEmpty}
+                      isReachingEnd={isReachingEnd}/>
             <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm}/>
         </Container>
     )
