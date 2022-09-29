@@ -14,5 +14,3 @@ export default function makeSection(chatList : IDM[]){
     })
     return sections;
 }
-
-// [ { id : 1 , d: '2021-02-25'} , {
