@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useRef} from "react";
 import gravatar from "gravatar";
 import {Container, Header} from "./styles";
 import useSWR, {useSWRInfinite} from "swr";
-import {IDM, IUser} from "@typings/db";
+import {IDM, IChat} from "@typings/db";
 import fetcher from "@utils/fetcher";
 import {useParams} from "react-router";
 import ChatBox from "@components/ChatBox";
