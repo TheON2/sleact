@@ -65,7 +65,7 @@ const Channel = () => {
     }, [chat, chatData, myData, channelData, workspace, channel]);
 
     const onMessage = useCallback((data: IChat) => {
-        if (data.Channel.name === channel && data.UserId !== myData?.id) {
+        if (data.Channel.name === channel && (data.content.startsWith('uploads\\')) || data.UserId !== myData?.id) {
             mutateChat((chatData) => {
                 chatData?.[0].unshift(data);
                 return chatData;

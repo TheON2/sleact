@@ -1,5 +1,5 @@
 import Workspace from "@layouts/Workspace";
-import React, {useCallback, useEffect, useRef} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 
 import gravatar from "gravatar";
 import {Container, DragOver, Header} from "./styles";
@@ -26,6 +26,7 @@ const DirectMessage = () => {
 
     const [socket] = useSocket(workspace);
     const [chat, onChangeChat, setChat] = useInput('');
+    const [dragOver , setDragOver] = useState(false);
 
     const isEmpty = chatData?.[0]?.length === 0;
     // isEmpty = chatData를 수신 성공하고 , 첫배열에 데이터가 존재할때 , 그 길이가 0인가?

@@ -7,6 +7,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import useSWR from 'swr';
+import EachDM from '@components/EachDM';
 
 const DMList = () => {
     const { workspace } = useParams<{ workspace?: string }>();
@@ -17,7 +18,8 @@ const DMList = () => {
         userData ? `/api/workspaces/${workspace}/members` : null,
         fetcher,
     );
-    //const [socket] = useSocket(workspace);
+
+    const [socket] = useSocket(workspace);
     const [channelCollapse, setChannelCollapse] = useState(false);
     const [onlineList, setOnlineList] = useState<number[]>([]);
 
@@ -30,16 +32,16 @@ const DMList = () => {
         setOnlineList([]);
     }, [workspace]);
 
-    // useEffect(() => {
-    //     socket?.on('onlineList', (data: number[]) => {
-    //         setOnlineList(data);
-    //     });
-    //     console.log('socket on dm', socket?.hasListeners('dm'), socket);
-    //     return () => {
-    //         console.log('socket off dm', socket?.hasListeners('dm'));
-    //         socket?.off('onlineList');
-    //     };
-    // }, [socket]);
+    useEffect(() => {
+        socket?.on('onlineList', (data: number[]) => {
+            setOnlineList(data);
+        });
+        console.log('socket on dm', socket?.hasListeners('dm'), socket);
+        return () => {
+            console.log('socket off dm', socket?.hasListeners('dm'));
+            socket?.off('onlineList');
+        };
+    }, [socket]);
 
     return (
         <>
@@ -53,13 +55,13 @@ const DMList = () => {
                 </CollapseButton>
                 <span>Direct Messages</span>
             </h2>
-            {/*<div>*/}
-            {/*    {!channelCollapse &&*/}
-            {/*    memberData?.map((member) => {*/}
-            {/*        const isOnline = onlineList.includes(member.id);*/}
-            {/*        return <EachDM key={member.id} member={member} isOnline={isOnline} />;*/}
-            {/*    })}*/}
-            {/*</div>*/}
+            <div>
+                {!channelCollapse &&
+                memberData?.map((member) => {
+                    const isOnline = onlineList.includes(member.id);
+                    return <EachDM key={member.id} member={member} isOnline={isOnline} />;
+                })}
+            </div>
         </>
     );
 };
