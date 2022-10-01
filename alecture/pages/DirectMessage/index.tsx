@@ -2,7 +2,7 @@ import Workspace from "@layouts/Workspace";
 import React, {useCallback, useEffect, useRef} from "react";
 
 import gravatar from "gravatar";
-import {Container, Header} from "./styles";
+import {Container, DragOver, Header} from "./styles";
 import useSWR, {useSWRInfinite} from "swr";
 import {IDM, IChat} from "@typings/db";
 import fetcher from "@utils/fetcher";
@@ -83,6 +83,32 @@ const DirectMessage = () => {
         }
     },[]);
 
+    const onDrop = useCallback((e)=>{
+        e.preventDefault();
+        const formData = new FormData();
+        if (e.dataTransfer.items){
+            for(let i = 0 ; i < e.dataTransfer.items.length; i++){
+                if (e.dataTransfer.items[i].kind === 'file'){
+                    const file = e.dataTransfer.items[i].getAsFile();
+                    formData.append('image',file);
+                }
+            }
+        } else {
+            for (let i = 0 ; i < e.dataTransfer.files.length ; i++){
+                formData.append('image',e.dataTransfer.files[i]);
+            }
+        }
+        axios.post(`'/api/workspaces/${workspace}/dms/${id}/images`,formData).then(()=>{
+            setDragOver(false);
+            revalidate();
+        })
+    },[revalidate , workspace , id]);
+
+    const onDragOver = useCallback((e)=>{
+        e.preventDefault();
+        setDragOver(true);
+    },[]);
+
     useEffect(() => {
         socket?.on('dm',onMessage);
         return () => {
@@ -105,7 +131,7 @@ const DirectMessage = () => {
     const chatSections = makeSection(chatData ? chatData.flat().reverse() : []);
 
     return (
-        <Container>
+        <Container onDrop={onDrop} onDragOver={onDragOver}>
             <Header>
                 <img src={gravatar.url(userData.email, {s: '24px',})} alt={userData.nickname}/>
                 <span>{userData.nickname}</span>
@@ -113,6 +139,7 @@ const DirectMessage = () => {
             <ChatList chatSections={chatSections} scrollRef={scrollbarRef} setSize={setSize}
                       isReachingEnd={isReachingEnd}/>
             <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm}/>
+            {dragOver && <DragOver>업로드!</DragOver>}
         </Container>
     )
 }
