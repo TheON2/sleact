@@ -1,32 +1,31 @@
-import React, {FC, useCallback, useRef, VFC, forwardRef, RefObject} from "react";
-import {ChatZone, Section, StickyHeader} from "./styles";
-import {IChat, IDM} from "@typings/db";
-import Chat from "@components/Chat";
-import {Scrollbars} from 'react-custom-scrollbars';
+import Chat from '@components/Chat';
+import { ChatZone, Section, StickyHeader } from '@components/ChatList/styles';
+import { IChat, IDM } from '@typings/db';
+import React, { FC, RefObject, useCallback } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 interface Props {
+    scrollbarRef: RefObject<Scrollbars>;
+    isReachingEnd?: boolean;
+    isEmpty: boolean;
     chatSections: { [key: string]: (IDM | IChat)[] };
     setSize: (f: (size: number) => number) => Promise<(IDM | IChat)[][] | undefined>;
-    isReachingEnd: boolean;
-    scrollRef: RefObject<Scrollbars>;
 }
-
-const ChatList: VFC<Props> = (({chatSections, setSize, isReachingEnd,scrollRef}) => {
-    const onScroll = useCallback((values) => {
-        if (values.scrollTop === 0 && !isReachingEnd) {
-            console.log('가장 위');
-            // 데이터 추가 로딩
-            setSize((prevSize) => prevSize + 1)
-                .then(() => {
-                    //스크롤 위치 유지
-                    scrollRef.current?.scrollTop(scrollRef.current?.getScrollHeight() - values.scrollHeight)
+const ChatList: FC<Props> = ({ scrollbarRef, isReachingEnd, isEmpty, chatSections, setSize }) => {
+    const onScroll = useCallback(
+        (values) => {
+            if (values.scrollTop === 0 && !isReachingEnd && !isEmpty) {
+                setSize((size) => size + 1).then(() => {
+                    scrollbarRef.current?.scrollTop(scrollbarRef.current?.getScrollHeight() - values.scrollHeight);
                 });
-        }
-    }, []);
+            }
+        },
+        [setSize, scrollbarRef, isReachingEnd, isEmpty],
+    );
 
     return (
         <ChatZone>
-            <Scrollbars autoHide ref={scrollRef} onScrollFrame={onScroll}>
+            <Scrollbars autoHide ref={scrollbarRef} onScrollFrame={onScroll}>
                 {Object.entries(chatSections).map(([date, chats]) => {
                     return (
                         <Section className={`section-${date}`} key={date}>
@@ -34,14 +33,14 @@ const ChatList: VFC<Props> = (({chatSections, setSize, isReachingEnd,scrollRef})
                                 <button>{date}</button>
                             </StickyHeader>
                             {chats.map((chat) => (
-                                <Chat key={chat.id} data={chat}/>
+                                <Chat key={chat.id} data={chat} />
                             ))}
                         </Section>
-                    )
+                    );
                 })}
             </Scrollbars>
         </ChatZone>
     );
-});
+};
 
 export default ChatList;

@@ -1,63 +1,57 @@
-import React, {useCallback, VFC, useRef, useEffect} from "react";
-import {MentionsTextarea, Form, ChatArea, Toolbox, SendButton, EachMention} from "@components/ChatBox/styles";
-import {Mention, SuggestionDataItem} from "react-mentions";
-import autosize from "autosize";
-import {useParams} from "react-router";
-import useSWR from "swr";
-import fetcher from "@utils/fetcher";
-import {IUserWithOnline} from "@typings/db";
-import gravatar from "gravatar";
+import { ChatArea, Form, MentionsTextarea, SendButton, Toolbox, EachMention } from '@components/ChatBox/styles';
+import { IUser } from '@typings/db';
+import autosize from 'autosize';
+import gravatar from 'gravatar';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
+import { Mention, SuggestionDataItem } from 'react-mentions';
 
 interface Props {
-    chat: string;
     onSubmitForm: (e: any) => void;
+    chat?: string;
     onChangeChat: (e: any) => void;
-    placeholder?: string;
+    placeholder: string;
+    data?: IUser[];
 }
-
-const ChatBox: VFC<Props> = ({chat, onSubmitForm, onChangeChat, placeholder}) => {
-
-    const {workspace, id} = useParams<{ workspace: string, id: string }>();
-    const {
-        data: userData,
-        error,
-        mutate
-    } = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher, {dedupingInterval: 2000,},);
-    const {data: memberData} = useSWR<IUserWithOnline[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher,);
-
+const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, data }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-    const renderUserSuggestion = useCallback(
-        (
-             suggestion: SuggestionDataItem,
-             search: string,
-             highlightedDisplay: React.ReactNode,
-             index: number,
-             focus: boolean,
-        ): React.ReactNode => {
-            if(!memberData) return;
-            return(
-                <EachMention focus={focus}>
-                    <img src={gravatar.url(memberData[index].email, { s: '20px' , d: 'retro'})} alt={memberData[index].nickname}/>
-                    <span>{highlightedDisplay}</span>
-                </EachMention>
-            )
-        }, [memberData]);
-
     useEffect(() => {
         if (textareaRef.current) {
             autosize(textareaRef.current);
         }
     }, []);
 
-    const onKeydownChat = useCallback((e) => {
-        if (e.key === 'Enter') {
-            if (!e.shiftKey) {
-                e.preventDefault();
-                onSubmitForm(e);
+    const onKeydownChat = useCallback(
+        (e) => {
+            if (e.key === 'Enter') {
+                if (!e.shiftKey) {
+                    e.preventDefault();
+                    onSubmitForm(e);
+                }
             }
-        }
-    }, [onSubmitForm]);
+        },
+        [onSubmitForm],
+    );
+
+    const renderUserSuggestion: (
+        suggestion: SuggestionDataItem,
+        search: string,
+        highlightedDisplay: React.ReactNode,
+        index: number,
+        focused: boolean,
+    ) => React.ReactNode = useCallback(
+        (member, search, highlightedDisplay, index, focus) => {
+            if (!data) {
+                return null;
+            }
+            return (
+                <EachMention focus={focus}>
+                    <img src={gravatar.url(data[index].email, { s: '20px', d: 'retro' })} alt={data[index].nickname} />
+                    <span>{highlightedDisplay}</span>
+                </EachMention>
+            );
+        },
+        [data],
+    );
 
     return (
         <ChatArea>
@@ -74,7 +68,7 @@ const ChatBox: VFC<Props> = ({chat, onSubmitForm, onChangeChat, placeholder}) =>
                     <Mention
                         appendSpaceOnAdd
                         trigger="@"
-                        data={memberData?.map((v) => ({id: v.id, display: v.nickname})) || []}
+                        data={data?.map((v) => ({ id: v.id, display: v.nickname })) || []}
                         renderSuggestion={renderUserSuggestion}
                     />
                 </MentionsTextarea>
@@ -90,14 +84,12 @@ const ChatBox: VFC<Props> = ({chat, onSubmitForm, onChangeChat, placeholder}) =>
                         type="submit"
                         disabled={!chat?.trim()}
                     >
-                        <i className="c-icon c-icon--paperplane-filled" aria-hidden="true"/>
+                        <i className="c-icon c-icon--paperplane-filled" aria-hidden="true" />
                     </SendButton>
                 </Toolbox>
             </Form>
         </ChatArea>
-    )
-
-
+    );
 };
 
 export default ChatBox;
