@@ -120,6 +120,8 @@ const DirectMessage = () => {
     useEffect(() => {
         localStorage.setItem(`${workspace}-${id}`, new Date().getTime().toString());
     }, [workspace, id]);
+    // workspace - 아이디 로 Date 인스턴스를 생성 및 현재시각을 기록한다.
+    // workpsace와 id를 deps로 넣고 이를 감지하여 채널 이동마다 기록.
 
     const onDrop = useCallback(
         (e) => {

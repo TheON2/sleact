@@ -133,6 +133,8 @@ const Channel = () => {
     useEffect(() => {
         localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
     }, [workspace, channel]);
+    // workspace - 채널명 으로 Date 인스턴스를 생성 및 현재시각을 기록한다.
+    // workpsace와 channel을 deps로 넣고 이를 감지하여 채널 이동마다 기록.
 
     const onClickInviteChannel = useCallback(() => {
         setShowInviteChannelModal(true);
