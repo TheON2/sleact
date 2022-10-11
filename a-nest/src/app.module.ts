@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
+import { UsersService } from './users/users.service';
 
 const getEnv = () => {
   return {
@@ -16,9 +17,15 @@ const getEnv = () => {
 };
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, load: [getEnv] }), UsersModule, WorkspacesModule, ChannelsModule, DmsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, load: [getEnv] }),
+    UsersModule,
+    WorkspacesModule,
+    ChannelsModule,
+    DmsModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, UsersService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
