@@ -18,7 +18,7 @@ export class UsersService {
 
   getUser() {}
 
-  async postUsers(email: string, nickname: string, password: string) {
+  async join(email: string, nickname: string, password: string) {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (user) {
       throw new UnauthorizedException('이미 존재하는 사용자입니다.');
